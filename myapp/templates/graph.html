@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Task Dependency Graph</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .task {
+            padding: 10px;
+            margin: 10px;
+            border: 1px solid #333;
+            display: inline-block;
+        }
+        .completed { background-color: #c8e6c9; }
+        .in_progress { background-color: #bbdefb; }
+        .pending { background-color: #fff9c4; }
+        .blocked { background-color: #ffcdd2; }
+
+        .arrow {
+            margin: 5px 0;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Task Dependency Graph</h2>
+
+{% for task in tasks %}
+    <div class="task {{ task.status }}">
+        <strong>{{ task.title }}</strong><br>
+        Status: {{ task.status }}
+
+        {% for dep in task.dependencies.all %}
+            <div class="arrow">
+                ⬇ depends on ⬇
+            </div>
+            <div class="task {{ dep.depends_on.status }}">
+                {{ dep.depends_on.title }}
+            </div>
+        {% endfor %}
+    </div>
+{% endfor %}
+
+</body>
+</html>
