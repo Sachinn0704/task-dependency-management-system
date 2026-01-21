@@ -130,31 +130,10 @@ python manage.py runserver
 
 ⚠️ These URLs work after running the server locally
 
-Home Page
 
-http://127.0.0.1:8000/
-
-
-Admin Panel
-
-http://127.0.0.1:8000/admin/
-
-
-Task List UI
-
-http://127.0.0.1:8000/tasks/
-
-
-Dependency Graph UI
-
-http://127.0.0.1:8000/graph/
-
-
-Tasks API
-
-http://127.0.0.1:8000/api/tasks/
 
 
 Dependencies API
 
 http://127.0.0.1:8000/api/dependencies/
+
