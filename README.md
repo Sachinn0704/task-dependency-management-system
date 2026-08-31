@@ -1,139 +1,120 @@
 # Task Dependency Management System
 
-## 📌 Project Description
-This project is a **Task Dependency Management System** developed using **Django** and **Django REST Framework**.
+A Django and Django REST Framework backend for managing tasks and their dependencies. The system validates dependency relationships, prevents circular dependencies, updates task states based on dependency completion, and exposes REST APIs alongside a lightweight dependency graph view.
 
-The system allows tasks to depend on other tasks, automatically updates task statuses based on dependency completion, prevents circular dependencies, and provides both REST APIs and a simple visual graph for dependencies.
+## Project Summary
 
-This project focuses on **backend logic correctness**, **data integrity**, and **clean architecture**, with a lightweight UI for visualization.
+The project focuses on backend correctness and data integrity. Tasks are represented as a directed dependency graph, while model-level validation prevents invalid relationships such as self-dependencies and multi-level cycles.
 
----
+## Main Features
 
-## 🚀 Features Implemented
+- Create, update, and delete tasks
+- Task states: `pending`, `in_progress`, `completed`, and `blocked`
+- Multiple dependencies per task
+- Dependency management through Django Admin and REST APIs
+- Automatic status updates using Django signals
+- Circular-dependency prevention using depth-first search (DFS)
+- Lightweight dependency graph visualization
+- JSON REST API responses
 
-### ✅ Task Management
-- Create, update, delete tasks
-- Supported statuses:
-  - `pending`
-  - `in_progress`
-  - `completed`
-  - `blocked`
+## Automatic Status Logic
 
----
+- When all dependencies are completed, a dependent task can move to `in_progress`.
+- When one or more dependencies are incomplete, the dependent task remains `pending`.
 
-### ✅ Dependency Management
-- Tasks can depend on multiple other tasks
-- Dependencies stored as a **directed graph**
-- Dependencies manageable via:
-  - Django Admin
-  - REST APIs
+## Circular Dependency Prevention
 
----
+The model validation checks for:
 
-# Automatic Status Update
-- If **all dependencies are completed** → task becomes `in_progress`
-- If **any dependency is incomplete** → task remains `pending`
-- Implemented using **Django signals**
+- Self-dependencies such as `A → A`
+- Multi-level cycles such as `A → B → C → A`
 
----
+DFS is used to detect whether adding a dependency would create a cycle. The validation applies to the model layer, so it protects both the admin interface and API workflows.
 
-# Circular Dependency Prevention
-- Prevents:
-  - Self-dependency (Task → same Task)
-  - Multi-level cycles (A → B → C → A)
-- Implemented using **Depth-First Search (DFS)**
-- Validation enforced at **model level**
-- Works in:
-  - Admin UI
-  - REST APIs
+## REST API
 
----
+### Tasks
 
- # Graph Visualization (UI)
-- Visual display of task dependencies
-- Status-based color coding
-- Lightweight HTML-based graph (no external libraries)
+```text
+/api/tasks/
+```
 
- Graph Page (Local):
- (http://127.0.0.1:8000/graph/)
- 
----
+### Dependencies
 
-## 🌐 REST API Endpoints
+```text
+/api/dependencies/
+```
 
-### 🔹 Tasks API
-- List & create tasks
-http://127.0.0.1:8000/api/tasks/
+Both endpoints are intended for local development and return JSON responses.
 
-### 🔹 Dependencies API
-- List & create task dependencies
-http://127.0.0.1:8000/api/dependencies/
+## Technology Stack
 
-
-All APIs return **JSON responses** and enforce validation rules.
-
----
-
-## 🛠 Technology Stack
 - Python 3.11
 - Django 5.x
 - Django REST Framework
-- SQLite (default database)
+- SQLite
 
----
+## Project Structure
 
-## 📁 Project Structure
-
-taskmanager/
-│
+```text
+.
 ├── manage.py
 ├── db.sqlite3
 ├── README.md
-│
 ├── myapp/
-│ ├── models.py
-│ ├── views.py
-│ ├── serializers.py
-│ ├── signals.py
-│ ├── admin.py
-│ ├── templates/
-│ │ ├── task_list.html
-│ │ └── graph.html
-│ └── migrations/
-│
+│   ├── models.py
+│   ├── views.py
+│   ├── serializers.py
+│   ├── signals.py
+│   ├── admin.py
+│   ├── templates/
+│   │   ├── task_list.html
+│   │   └── graph.html
+│   └── migrations/
 └── taskmanager/
-├── settings.py
-├── urls.py
-└── wsgi.py
+    ├── settings.py
+    ├── urls.py
+    └── wsgi.py
+```
 
+## How to Run Locally
 
----
+### 1. Clone the repository
 
-## ⚙️ How to Run the Project (Step-by-Step)
-
-### 1️⃣ Clone the repository
 ```bash
-git clone <PASTE_GITHUB_REPO_LINK_HERE>
-cd taskmanager
+git clone <repository-url>
+cd task-dependency-management-system
+```
 
-2️⃣ Install dependencies
+### 2. Install dependencies
+
+```bash
 pip install django djangorestframework
+```
 
-3️⃣ Apply migrations
+### 3. Apply migrations
+
+```bash
 python manage.py makemigrations
 python manage.py migrate
+```
 
-4️⃣ Start the server
+### 4. Start the development server
+
+```bash
 python manage.py runserver
+```
 
-🔗 Access URLs (Local Development)
+### 5. Open the application
 
-⚠️ These URLs work after running the server locally
+Use the local server address and the API routes documented above. The graph view is available at `/graph/` when enabled by the project's URL configuration.
 
+## Key Learning Outcomes
 
-
-
-Dependencies API
-
-http://127.0.0.1:8000/api/dependencies/
-
+- Django model design
+- REST API development
+- Graph-based dependency management
+- DFS cycle detection
+- Model-level validation
+- Signals and state-management logic
+- Backend data integrity
