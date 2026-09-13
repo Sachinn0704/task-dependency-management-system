@@ -23,22 +23,21 @@ class Task(models.Model):
         return self.title
 
     def update_status_based_on_dependencies(self):
-        """
-        Auto-update task status based on dependencies.
-        """
+        """Update status only when dependency state requires a change."""
         dependencies = self.dependencies.all()
 
         if not dependencies.exists():
             return
 
+        new_status = 'in_progress'
         for dep in dependencies:
             if dep.depends_on.status != 'completed':
-                self.status = 'pending'
-                self.save()
-                return
+                new_status = 'pending'
+                break
 
-        self.status = 'in_progress'
-        self.save()
+        if self.status != new_status:
+            self.status = new_status
+            self.save(update_fields=['status'])
 
     def has_circular_dependency(self, target_task):
         """
