@@ -73,6 +73,14 @@ class TaskDependency(models.Model):
         on_delete=models.CASCADE
     )
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['task', 'depends_on'],
+                name='unique_task_dependency'
+            )
+        ]
+
     def clean(self):
         if self.task == self.depends_on:
             raise ValidationError("A task cannot depend on itself.")
