@@ -1,4 +1,5 @@
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 from django.test import TestCase
 
 from .models import Task, TaskDependency
@@ -24,6 +25,12 @@ class TaskDependencyModelTests(TestCase):
 
         with self.assertRaises(ValidationError):
             dependency.save()
+
+    def test_duplicate_dependency_is_rejected_by_database_constraint(self):
+        TaskDependency.objects.create(task=self.first, depends_on=self.second)
+
+        with self.assertRaises(IntegrityError):
+            TaskDependency.objects.create(task=self.first, depends_on=self.second)
 
     def test_pending_task_becomes_in_progress_when_dependencies_are_complete(self):
         TaskDependency.objects.create(task=self.first, depends_on=self.second)
