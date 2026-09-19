@@ -1,8 +1,10 @@
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.test import TestCase
+from rest_framework.test import APIRequestFactory
 
 from .models import Task, TaskDependency
+from .views import task_api
 
 
 class TaskDependencyModelTests(TestCase):
@@ -51,3 +53,25 @@ class TaskDependencyModelTests(TestCase):
         self.first.refresh_from_db()
 
         self.assertEqual(self.first.status, "pending")
+
+
+class TaskApiFilterTests(TestCase):
+    def setUp(self):
+        self.factory = APIRequestFactory()
+        Task.objects.create(title="Pending task", status="pending")
+        Task.objects.create(title="Done task", status="completed")
+
+    def test_status_filter_returns_matching_tasks(self):
+        request = self.factory.get('/api/tasks/', {'status': 'completed'})
+        response = task_api(request)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]['status'], 'completed')
+
+    def test_invalid_status_filter_returns_allowed_values(self):
+        request = self.factory.get('/api/tasks/', {'status': 'blocked_by_unknown'})
+        response = task_api(request)
+
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('allowed_statuses', response.data)
