@@ -12,6 +12,7 @@ The project focuses on backend correctness and data integrity. Tasks are represe
 - Task states: `pending`, `in_progress`, `completed`, and `blocked`
 - Multiple dependencies per task
 - Dependency management through Django Admin and REST APIs
+- Filter tasks by status through the REST API
 - Automatic status updates using Django signals
 - Circular-dependency prevention using depth-first search (DFS)
 - Lightweight dependency graph visualization
@@ -38,6 +39,17 @@ DFS is used to detect whether adding a dependency would create a cycle. The vali
 ```text
 /api/tasks/
 ```
+
+The task endpoint supports an optional `status` query parameter:
+
+```text
+/api/tasks/?status=pending
+/api/tasks/?status=in_progress
+/api/tasks/?status=completed
+/api/tasks/?status=blocked
+```
+
+If an unsupported status is supplied, the API returns HTTP `400` with the allowed status values instead of silently returning an empty result.
 
 ### Dependencies
 
@@ -118,3 +130,4 @@ Use the local server address and the API routes documented above. The graph view
 - Model-level validation
 - Signals and state-management logic
 - Backend data integrity
+- Query-parameter validation for API filtering
