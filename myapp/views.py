@@ -22,6 +22,7 @@ from .serializers import TaskSerializer
 def task_api(request):
     if request.method == 'GET':
         status_filter = request.query_params.get('status')
+        limit_param = request.query_params.get('limit')
         tasks = Task.objects.all()
 
         if status_filter:
@@ -35,6 +36,23 @@ def task_api(request):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             tasks = tasks.filter(status=status_filter)
+
+        if limit_param is not None:
+            try:
+                limit = int(limit_param)
+            except (TypeError, ValueError):
+                return Response(
+                    {'error': 'limit must be a positive integer.'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            if limit < 1 or limit > 100:
+                return Response(
+                    {'error': 'limit must be between 1 and 100.'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            tasks = tasks.order_by('-created_at')[:limit]
 
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data)
