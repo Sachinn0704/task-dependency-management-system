@@ -131,3 +131,4 @@ Use the local server address and the API routes documented above. The graph view
 - Signals and state-management logic
 - Backend data integrity
 - Query-parameter validation for API filtering
+Author  Sachin Bhosagi
